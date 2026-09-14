@@ -27,13 +27,13 @@ declare global {
 }
 
 const APPS: { id: AppId; label: string; icon: string; subtitle: string }[] = [
-  { id: 'files', label: 'Files', icon: '/hotfire/icons/files.ico', subtitle: 'Browse your workspace' },
-  { id: 'browser', label: 'Flare', icon: '/hotfire/icons/browser.ico', subtitle: 'Explore the web' },
-  { id: 'terminal', label: 'Terminal', icon: '/hotfire/icons/terminal.ico', subtitle: 'Command HotFire' },
-  { id: 'calculator', label: 'Calculator', icon: '/hotfire/icons/calculator.ico', subtitle: 'Crunch the numbers' },
-  { id: 'calendar', label: 'Calendar', icon: '/hotfire/icons/calendar.ico', subtitle: 'Plan your time' },
-  { id: 'music', label: 'Music', icon: '/hotfire/icons/music.ico', subtitle: 'Play local audio' },
-  { id: 'media', label: 'Media', icon: '/hotfire/icons/media.ico', subtitle: 'Watch local video' },
+  { id: 'files', label: 'Files', icon: '/hotfire/icons/files.png', subtitle: 'Browse your workspace' },
+  { id: 'browser', label: 'Flare', icon: '/hotfire/icons/browser.png', subtitle: 'Explore the web' },
+  { id: 'terminal', label: 'Terminal', icon: '/hotfire/icons/terminal.png', subtitle: 'Command HotFire' },
+  { id: 'calculator', label: 'Calculator', icon: '/hotfire/icons/calculator.png', subtitle: 'Crunch the numbers' },
+  { id: 'calendar', label: 'Calendar', icon: '/hotfire/icons/calendar.png', subtitle: 'Plan your time' },
+  { id: 'music', label: 'Music', icon: '/hotfire/icons/music.png', subtitle: 'Play local audio' },
+  { id: 'media', label: 'Media', icon: '/hotfire/icons/media.png', subtitle: 'Watch local video' },
 ];
 
 const INITIAL_FILES: VirtualFile[] = [
@@ -187,9 +187,9 @@ function WindowFrame({ appId, state, onFocus, onClose, onMinimize, onMaximize, o
   const app = getApp(appId);
   return (
     <section className={`app-window ${state.maximized ? 'maximized' : ''}`} style={state.maximized ? { zIndex: state.z } : { left: state.x, top: state.y, width: state.width, height: state.height, zIndex: state.z }} onPointerDown={onFocus}>
-      <div className="window-titlebar" onDoubleClick={onMaximize} onPointerDown={(event) => { if (state.maximized) return; event.currentTarget.setPointerCapture(event.pointerId); drag.current = { startX: event.clientX, startY: event.clientY, x: state.x, y: state.y }; }} onPointerMove={(event) => { if (!drag.current) return; onMove(Math.max(0, drag.current.x + event.clientX - drag.current.startX), Math.max(44, drag.current.y + event.clientY - drag.current.startY)); }} onPointerUp={() => { drag.current = null; }}>
+      <div className="window-titlebar" onDoubleClick={(event) => { if ((event.target as HTMLElement).closest('.window-actions')) return; onMaximize(); }} onPointerDown={(event) => { if (state.maximized || (event.target as HTMLElement).closest('.window-actions')) return; event.currentTarget.setPointerCapture(event.pointerId); drag.current = { startX: event.clientX, startY: event.clientY, x: state.x, y: state.y }; }} onPointerMove={(event) => { if (!drag.current) return; onMove(Math.max(0, drag.current.x + event.clientX - drag.current.startX), Math.max(44, drag.current.y + event.clientY - drag.current.startY)); }} onPointerUp={(event) => { if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId); drag.current = null; }} onPointerCancel={() => { drag.current = null; }}>
         <div className="window-name"><img src={app.icon} alt="" /><span>{app.label}</span></div>
-        <div className="window-actions"><button onClick={onMinimize} aria-label="Minimize"><Minus size={15} /></button><button onClick={onMaximize} aria-label="Maximize"><Maximize2 size={13} /></button><button className="close" onClick={onClose} aria-label="Close"><X size={16} /></button></div>
+        <div className="window-actions" onPointerDown={(event) => event.stopPropagation()} onDoubleClick={(event) => event.stopPropagation()}><button type="button" onClick={onMinimize} aria-label="Minimize" title="Minimize"><Minus size={15} /></button><button type="button" onClick={onMaximize} aria-label={state.maximized ? 'Restore' : 'Maximize'} title={state.maximized ? 'Restore' : 'Maximize'}><Maximize2 size={13} /></button><button type="button" className="close" onClick={onClose} aria-label="Close" title="Close"><X size={16} /></button></div>
       </div>
       <div className="window-content">{children}</div>
     </section>
